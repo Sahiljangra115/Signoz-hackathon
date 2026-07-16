@@ -13,8 +13,9 @@
 │ SigNoz Alert / setup documents  │ DONE     │ 2026-07-16              │
 │ Fix all 40 architectural bugs   │ DONE     │ 2026-07-16              │
 │ Create & push GitHub repository │ DONE     │ 2026-07-16              │
-│ HQ Web UI Frontend React Pages  │ PENDING  │ 2026-07-16              │
-│ Live SigNoz integration & demo  │ PENDING  │ 2026-07-17              │
+│ HQ Web UI Frontend React Pages  │ DONE     │ 2026-07-16              │
+│ Live SigNoz integration & demo  │ DONE     │ 2026-07-16              │
+│ Complete E2E UI + API Testing   │ DONE     │ 2026-07-16              │
 └─────────────────────────────────┴──────────┴─────────────────────────┘
 
 ## Completed Milestones
@@ -28,3 +29,7 @@
 - **Structured JSON-Schema Brain (K)**: Integrated schema constraints onto Claude Sonnet 5 calls using verified SDK configurations.
 - **Startup Sweep**: Implemented clean startup sweep escalations in `orchestrator/app/main.py` on orchestrator restart for any active cases older than 10 minutes.
 - **SigNoz Alert Rules Documentation**: Wrote rule descriptions and guide templates inside `deploy/signoz/` folder.
+- **SigNoz Integration & Debugging**: Resolved `SIGNOZ_URL` configuration inside Docker (changing `localhost` to host bridge gateway `172.18.0.1`), configured the `wemakedevs` Service Account in the SigNoz settings panel with the necessary `signoz-admin` roles to authorize API requests, and fixed the v5 `query_range` JSON payloads in `signoz_client.py` by removing invalid `queryType` and `panelType` fields at the root of `compositeQuery` dictionary definitions.
+- **E2E Integration Testing & Bugfix**: Fixed the critical response nesting bug in `signoz_client.py` where it was looking for query results at the wrong depth level. Successfully created and executed an automated end-to-end integration test [test_e2e_frontend.py](file:///home/ladliju/Developer/Signoz-hackathon/monitors-in-black/test_e2e_frontend.py) via `browser-use` Chromium, capturing all steps from Clearance intro bypass to automated dossier query checks.
+
+

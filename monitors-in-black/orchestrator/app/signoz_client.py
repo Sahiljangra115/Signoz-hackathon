@@ -45,7 +45,7 @@ def query_range(payload: dict) -> dict:
             json=payload
         )
         resp.raise_for_status()
-        return resp.json()
+        return resp.json().get("data", {})
     except Exception as exc:
         log.warning("SigNoz query_range failed: %s", exc)
         return {}
@@ -60,8 +60,6 @@ def query_error_logs(service: str, window_min: int = 15, limit: int = 20) -> lis
         "end": end_ms,
         "requestType": "raw",
         "compositeQuery": {
-            "queryType": "builder",
-            "panelType": "list",
             "queries": [
                 {
                     "type": "builder_query",
@@ -111,8 +109,6 @@ def query_slow_traces(service: str, window_min: int = 15, limit: int = 10) -> li
         "end": end_ms,
         "requestType": "raw",
         "compositeQuery": {
-            "queryType": "builder",
-            "panelType": "list",
             "queries": [
                 {
                     "type": "builder_query",
@@ -166,8 +162,6 @@ def recent_logs_matching(expr: str, minutes: int = 15, limit: int = 10) -> list[
         "end": end_ms,
         "requestType": "raw",
         "compositeQuery": {
-            "queryType": "builder",
-            "panelType": "list",
             "queries": [
                 {
                     "type": "builder_query",
@@ -228,8 +222,6 @@ def metric_series(metric: str, agg: str = "sum", minutes: int = 15) -> list[dict
         "end": end_ms,
         "requestType": "time_series",
         "compositeQuery": {
-            "queryType": "builder",
-            "panelType": "time_series",
             "queries": [
                 {
                     "type": "builder_query",
@@ -288,8 +280,6 @@ def query_p99_latency(service: str, window_min: int = 2) -> float | None:
         "end": end_ms,
         "requestType": "scalar",
         "compositeQuery": {
-            "queryType": "builder",
-            "panelType": "value",
             "queries": [
                 {
                     "type": "builder_query",
@@ -334,8 +324,6 @@ def query_error_rate(service: str, window_min: int = 2) -> float | None:
         "end": end_ms,
         "requestType": "scalar",
         "compositeQuery": {
-            "queryType": "builder",
-            "panelType": "value",
             "queries": [
                 {
                     "type": "builder_query",

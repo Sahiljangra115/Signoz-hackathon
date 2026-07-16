@@ -12,8 +12,8 @@
     "codename": "Error Swarm",
     "threat_level": 4,
     "signature": "5xx error-rate burst",
-    "captures": 7,
-    "last_seen": "2026-07-16T08:52:13Z"
+    "captures": 12,
+    "last_seen": "2026-07-16T17:57:20Z"
   },
   {
     "species": "token_devourer",
