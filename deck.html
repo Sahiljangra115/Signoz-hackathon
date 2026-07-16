@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitors in Black - Motion Deck</title>
+    <style>
+      @font-face {
+        font-family: 'Cormorant Garamond';
+        font-style: normal;
+        font-weight: 500;
+        src: url('assets/fonts/cormorant-garamond-regular.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Cormorant Garamond';
+        font-style: normal;
+        font-weight: 600;
+        src: url('assets/fonts/cormorant-garamond-semibold.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Cormorant Garamond';
+        font-style: normal;
+        font-weight: 700;
+        src: url('assets/fonts/cormorant-garamond-bold.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Cormorant Garamond';
+        font-style: italic;
+        font-weight: 600;
+        src: url('assets/fonts/cormorant-garamond-italic-semibold.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Cormorant Garamond';
+        font-style: italic;
+        font-weight: 700;
+        src: url('assets/fonts/cormorant-garamond-italic-bold.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        font-style: normal;
+        font-weight: 400;
+        src: url('assets/fonts/jetbrains-mono.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        font-style: normal;
+        font-weight: 500;
+        src: url('assets/fonts/jetbrains-mono.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        font-style: normal;
+        font-weight: 700;
+        src: url('assets/fonts/jetbrains-mono.woff2') format('woff2');
+      }
+
+      :root {
+        --bg: #050807;
+        --fg: #eef4ef;
+        --muted: #6d7a72;
+        --accent: #00ff66;
+        --line: #17231b;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "JetBrains Mono", monospace;
+        background: #000;
+        color: var(--fg);
+      }
+      #root {
+        position: absolute;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: radial-gradient(1700px 780px at 50% 46%, #0a120d 0%, #060a08 55%, #040605 100%);
+      }
+      .vignette {
+        position: absolute;
+        inset: -2%;
+        pointer-events: none;
+        z-index: 92;
+        box-shadow: inset 0 0 240px rgba(0,0,0,.92), inset 0 0 10px #000;
+      }
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 90;
+        opacity: .08;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.86'/%3E%3C/svg%3E");
+        mix-blend-mode: soft-light;
+      }
+      .cursor-light {
+        position: absolute;
+        width: 560px;
+        height: 560px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 6;
+        opacity: .18;
+        transform: translate(-50%,-50%);
+        background: radial-gradient(circle, #00ff6655 0%, #00ff6618 32%, transparent 76%);
+      }
+      .matrix {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        opacity: .4;
+      }
+      .matrix line {
+        stroke: #00ff66;
+        stroke-opacity: .10;
+        stroke-width: 1;
+      }
+      .matrix circle {
+        fill: #00ff66;
+        fill-opacity: .22;
+      }
+      .matrix circle.hot {
+        fill-opacity: .6;
+      }
+      .frame {
+        position: absolute;
+        inset: 18px;
+        border: 1px solid var(--line);
+        z-index: 15;
+        pointer-events: none;
+      }
+      .frame::before, .frame::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 1px solid #00ff6640;
+      }
+      .frame::before {
+        top: 10px;
+        left: 10px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .frame::after {
+        right: 10px;
+        bottom: 10px;
+        border-left: none;
+        border-top: none;
+      }
+      .hud {
+        position: absolute;
+        top: 32px;
+        left: 42px;
+        right: 42px;
+        z-index: 30;
+        font-size: 19px;
+        text-transform: uppercase;
+        letter-spacing: .28em;
+        color: #5f6e64;
+        display: flex;
+        justify-content: space-between;
+      }
+      .telemetry {
+        position: absolute;
+        left: 50px;
+        bottom: 40px;
+        z-index: 30;
+        font-size: 18px;
+        letter-spacing: .14em;
+        color: #43514a;
+      }
+      .telemetry b {
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .pager {
+        position: absolute;
+        right: 50px;
+        bottom: 38px;
+        z-index: 30;
+        font-size: 30px;
+        letter-spacing: .22em;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        padding: 54px 64px;
+        display: grid;
+        z-index: 10;
+      }
+      .scene.live {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .serif {
+        font-family: "Cormorant Garamond", Georgia, serif;
+      }
+      .accent {
+        color: var(--accent);
+      }
+      .wipe {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        z-index: 70;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        pointer-events: none;
+      }
+      .wipe i {
+        transform: translateY(-100%);
+        background: linear-gradient(180deg, #020403, #0a140d, #040705);
+        border-right: 1px solid #0f1a13;
+        box-shadow: inset 0 -1px 0 #00ff6633;
+      }
+
+      .s1 { grid-template-rows: auto 1fr auto; }
+      .s1-top { display: flex; justify-content: space-between; align-items: center; font-size: 18px; letter-spacing: .38em; color: #5f6e64; text-transform: uppercase; }
+      .s1-center { align-self: center; justify-self: center; text-align: center; }
+      .s1-title { line-height: .88; font-size: 150px; font-weight: 600; letter-spacing: .02em; text-shadow: 0 0 46px #00ff6626; }
+      .s1-title .accent { text-shadow: 0 0 60px #00ff6650; }
+      .s1-sub { margin-top: 34px; font-size: 26px; letter-spacing: .32em; text-transform: uppercase; color: #8d9c92; }
+      .s1-sub b { color: var(--accent); font-weight: 500; }
+      .s1-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; border-top: 1px solid var(--line); padding-top: 20px; font-size: 19px; letter-spacing: .24em; color: #5f6e64; text-transform: uppercase; }
+      .s1-meta strong { display: block; margin-top: 12px; color: #eef4ef; letter-spacing: .02em; font-size: 46px; font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 600; text-transform: none; }
+
+      .s2 { grid-template-columns: 46% 54%; align-items: center; }
+      .s2-left { display: grid; grid-template-columns: 70px 1fr; gap: 28px; align-items: center; }
+      .chapter-tag { writing-mode: vertical-rl; text-orientation: mixed; font-size: 18px; letter-spacing: .42em; color: #5f6e64; text-transform: uppercase; }
+      .chapter-no { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 250px; line-height: .8; color: var(--accent); text-shadow: 0 0 70px #00ff6633; }
+      .s2-right { padding: 50px 40px; border-left: 1px solid var(--line); }
+      .kicker { color: #5f6e64; letter-spacing: .36em; text-transform: uppercase; font-size: 20px; }
+      .kicker b { color: var(--accent); font-weight: 500; }
+      .s2-headline { margin-top: 26px; font-size: 96px; font-weight: 600; line-height: .86; text-shadow: 0 0 40px #000; }
+      .s2-copy { margin-top: 28px; max-width: 760px; color: #9aa89f; font-size: 40px; line-height: 1.22; font-family: "Cormorant Garamond", serif; }
+      .s2-copy .accent { font-style: italic; }
+      .s2-trace { margin-top: 34px; font-size: 19px; letter-spacing: .1em; color: #43514a; }
+      .s2-trace b { color: var(--accent); font-weight: 500; }
+
+      .s3 { grid-template-rows: 1fr auto; }
+      .s3-wrap { align-self: center; display: grid; grid-template-columns: 95px 1fr; gap: 34px; }
+      .prompt-mark { font-size: 120px; color: var(--accent); line-height: 1; text-shadow: 0 0 50px #00ff6640; }
+      .s3-headline { font-family: "Cormorant Garamond", serif; font-size: 118px; font-weight: 600; line-height: .86; text-shadow: 0 0 42px #000; }
+      .s3-copy { margin-top: 28px; max-width: 1320px; color: #9aa89f; font-size: 40px; line-height: 1.22; font-family: "Cormorant Garamond", serif; }
+      .roles { margin-top: 40px; display: flex; gap: 18px; }
+      .roles span { border: 1px solid #1d2c22; padding: 14px 26px; font-size: 20px; letter-spacing: .26em; text-transform: uppercase; color: #8d9c92; }
+      .roles span.wiped { border-color: #00ff6655; color: var(--accent); }
+      .rule { width: 100%; height: 1px; margin-top: 36px; background: linear-gradient(90deg, #00ff66 0%, #12331f 48%, transparent 100%); }
+      .s3-foot { display: flex; justify-content: space-between; color: #5f6e64; letter-spacing: .3em; text-transform: uppercase; font-size: 20px; }
+    </style>
+    <script src="assets/gsap.min.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="8.0" data-width="1920" data-height="1080">
+      <div class="cursor-light" id="cursorLight"></div>
+      <svg class="matrix" id="matrix" viewBox="0 0 1920 1080" aria-hidden="true">
+        <line x1="180" y1="200" x2="520" y2="120" /><line x1="520" y1="120" x2="880" y2="260" />
+        <line x1="880" y1="260" x2="1320" y2="150" /><line x1="1320" y1="150" x2="1700" y2="300" />
+        <line x1="180" y1="200" x2="340" y2="620" /><line x1="340" y1="620" x2="880" y2="260" />
+        <line x1="340" y1="620" x2="760" y2="880" /><line x1="760" y1="880" x2="1240" y2="940" />
+        <line x1="1240" y1="940" x2="1700" y2="300" /><line x1="880" y1="260" x2="1240" y2="940" />
+        <line x1="1320" y1="150" x2="1560" y2="760" /><line x1="1560" y1="760" x2="1240" y2="940" />
+        <circle cx="180" cy="200" r="4" /><circle cx="520" cy="120" r="3" class="hot" />
+        <circle cx="880" cy="260" r="5" class="hot" /><circle cx="1320" cy="150" r="3" />
+        <circle cx="1700" cy="300" r="4" /><circle cx="340" cy="620" r="4" class="hot" />
+        <circle cx="760" cy="880" r="3" /><circle cx="1240" cy="940" r="5" class="hot" />
+        <circle cx="1560" cy="760" r="3" />
+      </svg>
+      <div class="grain"></div>
+      <div class="frame"></div>
+      <div class="vignette"></div>
+      <div class="hud"><span>Monitors in Black</span><span id="chapterTop">Div. 6 · Agent Telemetry</span></div>
+      <div class="telemetry" id="telemetry">trace <b>7f3a…c901</b> · span ingest <b>OK</b></div>
+      <div class="pager" id="pager">01 / 03</div>
+      <div class="wipe" id="wipe"><i></i><i></i><i></i><i></i><i></i></div>
+
+      <section class="scene s1 live" id="s1" data-screen-label="01 Title">
+        <div class="s1-top"><span>Classified field brief · autonomous systems</span><span>File MIB-01</span></div>
+        <div class="s1-center">
+          <h1 class="s1-title serif">MONITORS<br /><span class="accent">IN BLACK</span></h1>
+          <div class="s1-sub">Anomalies exist. <b>We monitor them.</b></div>
+        </div>
+        <div class="s1-meta">
+          <div>Division<strong>M.I.B.</strong></div>
+          <div>Mandate<strong>Observe</strong></div>
+          <div>Coverage<strong>End to end</strong></div>
+          <div>Status<strong><span class="accent">Active</span></strong></div>
+        </div>
+      </section>
+
+      <section class="scene s2" id="s2" data-screen-label="02 Observability Shield">
+        <div class="s2-left">
+          <div class="chapter-tag">Monitors in Black · File MIB-01</div>
+          <div class="chapter-no">02</div>
+        </div>
+        <div class="s2-right">
+          <div class="kicker">Protocol 01 · <b>Trace audit</b></div>
+          <h2 class="s2-headline serif">THE<br />OBSERVABILITY<br />SHIELD</h2>
+          <p class="s2-copy">If you can't observe your AI agents, <span class="accent">you don't own them.</span> End-to-end trace auditing with SigNoz.</p>
+          <div class="s2-trace">span.audit → <b>signoz.ingest</b> · 100% sampled</div>
+        </div>
+      </section>
+
+      <section class="scene s3" id="s3" data-screen-label="03 Neuralyzer">
+        <div class="s3-wrap">
+          <div class="prompt-mark">&gt;_</div>
+          <div>
+            <h2 class="s3-headline serif">THE <span class="accent">NEURALYZER</span></h2>
+            <p class="s3-copy">Four autonomous agent roles: investigate, identify, remediate, and report. <span class="accent">Memory wiped.</span></p>
+            <div class="roles">
+              <span>Investigate</span><span>Identify</span><span>Remediate</span><span>Report</span><span class="wiped">Memory · wiped</span>
+            </div>
+            <div class="rule"></div>
+          </div>
+        </div>
+        <div class="s3-foot"><span>Protocol 02 · Neuralyzer</span><span>File MIB-01</span></div>
+      </section>
+    </div>
+
+    <script>
+      // Setup dynamic presentation scaling
+      function scaleRoot() {
+        const root = document.getElementById("root");
+        const targetW = 1920;
+        const targetH = 1080;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const scaleX = w / targetW;
+        const scaleY = h / targetH;
+        const scale = Math.min(scaleX, scaleY);
+        root.style.transform = `scale(${scale})`;
+        root.style.transformOrigin = "top left";
+        root.style.position = "absolute";
+        root.style.left = `${(w - targetW * scale) / 2}px`;
+        root.style.top = `${(h - targetH * scale) / 2}px`;
+      }
+      window.addEventListener("resize", scaleRoot);
+      scaleRoot();
+
+      window.__timelines = window.__timelines || {};
+      var scenes = ["s1", "s2", "s3"];
+      var pager = document.getElementById("pager");
+      var chapterTop = document.getElementById("chapterTop");
+      var telemetry = document.getElementById("telemetry");
+      var telemetryLines = [
+        'trace <b>7f3a…c901</b> · span ingest <b>OK</b>',
+        'audit <b>e2e</b> · exporter <b>signoz · OK</b>',
+        'agents <b>4/4</b> · memory <b>wiped · 0 bytes</b>'
+      ];
+      function showScene(index) {
+        scenes.forEach(function (id, i) { document.getElementById(id).classList.toggle("live", i === index); });
+        pager.textContent = "0" + (index + 1) + " / 03";
+        chapterTop.textContent = index === 0 ? "Div. 6 · Agent Telemetry" : index === 1 ? "Protocol 01 · Shield" : "Protocol 02 · Neuralyzer";
+        telemetry.innerHTML = telemetryLines[index];
+      }
+      function reveal(index, at) {
+        var id = "#" + scenes[index];
+        if (index === 0) {
+          tl.from(id + " .s1-top span", { y: -28, opacity: 0, stagger: 0.06, duration: 0.36, ease: "power3.out" }, at);
+          tl.from(id + " .s1-title", { y: 90, opacity: 0, scale: 0.95, duration: 0.72, ease: "expo.out" }, at + 0.08);
+          tl.from(id + " .s1-sub", { y: 26, opacity: 0, duration: 0.4, ease: "power2.out" }, at + 0.5);
+          tl.from(id + " .s1-meta > div", { y: 34, opacity: 0, stagger: 0.07, duration: 0.36, ease: "power2.out" }, at + 0.6);
+        } else if (index === 1) {
+          tl.from(id + " .chapter-tag", { opacity: 0, y: 30, duration: 0.3, ease: "power2.out" }, at + 0.08);
+          tl.from(id + " .chapter-no", { scale: 0.75, opacity: 0, duration: 0.6, ease: "expo.out" }, at + 0.02);
+          tl.from(id + " .kicker, " + id + " .s2-headline, " + id + " .s2-copy, " + id + " .s2-trace", { x: 55, opacity: 0, stagger: 0.09, duration: 0.42, ease: "power3.out" }, at + 0.16);
+        } else {
+          tl.from(id + " .prompt-mark", { scale: 0.5, opacity: 0, duration: 0.45, ease: "back.out(2.2)" }, at + 0.08);
+          tl.from(id + " .s3-headline, " + id + " .s3-copy", { y: 44, opacity: 0, stagger: 0.1, duration: 0.46, ease: "power2.out" }, at + 0.12);
+          tl.from(id + " .roles span", { y: 20, opacity: 0, stagger: 0.06, duration: 0.3, ease: "power2.out" }, at + 0.42);
+          tl.from(id + " .rule, " + id + " .s3-foot span", { opacity: 0, duration: 0.3, stagger: 0.06 }, at + 0.6);
+        }
+      }
+      function doWipe(at, nextIdx) {
+        tl.set("#wipe", { opacity: 1 }, at - 0.03);
+        tl.fromTo(".wipe i", { yPercent: -100 }, { yPercent: 0, duration: 0.24, stagger: 0.04, ease: "power3.in", overwrite: "auto" }, at);
+        tl.add(function () { showScene(nextIdx); }, at + 0.18);
+        tl.to(".wipe i", { yPercent: 100, duration: 0.24, stagger: 0.04, ease: "power3.out", overwrite: "auto" }, at + 0.2);
+        tl.set("#wipe", { opacity: 0 }, at + 0.49);
+      }
+      var T12 = 2.72;
+      var T23 = 5.44;
+      // Start timeline active instead of paused to auto-play when opened standalone
+      var tl = gsap.timeline({ paused: false });
+      reveal(0, 0);
+      tl.to(".s1-title .accent", { textShadow: "0 0 84px #00ff6680", duration: 0.3, yoyo: true, repeat: 1 }, 1.24);
+      tl.to("#cursorLight", { opacity: 0.28, duration: 0.34, yoyo: true, repeat: 1, ease: "sine.inOut" }, 1.45);
+      tl.to(".matrix circle.hot", { attr: { r: 7 }, duration: 0.4, yoyo: true, repeat: 1, stagger: 0.1, ease: "sine.inOut" }, 0.6);
+      doWipe(T12, 1);
+      reveal(1, T12 + 0.3);
+      tl.to("#s2 .chapter-no", { scale: 1.06, transformOrigin: "center", duration: 0.25, yoyo: true, repeat: 1 }, T12 + 1.2);
+      tl.to(".matrix circle.hot", { attr: { r: 7 }, duration: 0.4, yoyo: true, repeat: 1, stagger: 0.1, ease: "sine.inOut" }, T12 + 0.8);
+      doWipe(T23, 2);
+      reveal(2, T23 + 0.3);
+      tl.to("#s3 .roles .wiped", { borderColor: "#00ff66", duration: 0.23, yoyo: true, repeat: 1 }, T23 + 1.08);
+      tl.to("#pager", { y: -4, duration: 0.2, yoyo: true, repeat: 1 }, T23 + 1.35);
+      window.__timelines.main = tl;
+
+      var root = document.getElementById("root");
+      var mouseX = 960, mouseY = 540;
+      root.addEventListener("mousemove", function (e) {
+        var rect = root.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+        gsap.to("#cursorLight", { x: mouseX, y: mouseY, duration: 0.35, ease: "power2.out" });
+      });
+      root.addEventListener("mouseleave", function () { gsap.to("#cursorLight", { x: 960, y: 540, duration: 0.8, ease: "power3.out" }); });
+
+      // Interactive overrides for local navigation.
+      function jump(index) { tl.pause(index === 0 ? 0 : index === 1 ? T12 + 0.52 : T23 + 0.52); showScene(index); }
+      window.addEventListener("keydown", function (e) {
+        if (e.key === "1") jump(0);
+        if (e.key === "2") jump(1);
+        if (e.key === "3") jump(2);
+        if (e.key.toLowerCase() === "r") { tl.play(0); showScene(0); }
+      });
+      showScene(0);
+    </script>
+  </body>
+</html>

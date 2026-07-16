@@ -1,0 +1,50 @@
+[
+  {
+    "species": "latency_leech",
+    "codename": "Latency Leech",
+    "threat_level": 3,
+    "signature": "p99 latency spike on /chat spans",
+    "captures": 0,
+    "last_seen": null
+  },
+  {
+    "species": "error_swarm",
+    "codename": "Error Swarm",
+    "threat_level": 4,
+    "signature": "5xx error-rate burst",
+    "captures": 7,
+    "last_seen": "2026-07-16T08:52:13Z"
+  },
+  {
+    "species": "token_devourer",
+    "codename": "Token Devourer",
+    "threat_level": 4,
+    "signature": "gen_ai token usage spike",
+    "captures": 0,
+    "last_seen": null
+  },
+  {
+    "species": "memory_worm",
+    "codename": "Memory Worm",
+    "threat_level": 2,
+    "signature": "container memory climbing",
+    "captures": 0,
+    "last_seen": null
+  },
+  {
+    "species": "zombie_loop",
+    "codename": "Zombie Loop",
+    "threat_level": 2,
+    "signature": "repeating poison-message error logs",
+    "captures": 0,
+    "last_seen": null
+  },
+  {
+    "species": "ghost",
+    "codename": "The Ghost",
+    "threat_level": 3,
+    "signature": "traffic drops to near zero",
+    "captures": 0,
+    "last_seen": null
+  }
+]

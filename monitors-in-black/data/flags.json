@@ -1,0 +1,8 @@
+{
+  "latency_leech": false,
+  "error_swarm": false,
+  "token_devourer": false,
+  "memory_worm": false,
+  "zombie_loop": false,
+  "ghost": false
+}

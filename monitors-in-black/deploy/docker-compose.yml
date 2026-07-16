@@ -1,0 +1,41 @@
+services:
+  city:
+    build: ../city
+    container_name: city
+    ports: ["8000:8000"]
+    env_file: ../.env
+    volumes:
+      - ../data:/data
+    environment:
+      - DATA_DIR=/data
+      - OTEL_SERVICE_NAME=city
+    restart: unless-stopped
+
+  trafficgen:
+    image: python:3.12-slim
+    container_name: trafficgen
+    volumes:
+      - ../trafficgen:/app
+      - ../data:/data
+    working_dir: /app
+    command: sh -c "pip install --quiet httpx && python traffic.py"
+    environment:
+      - CITY_URL=http://city:8000
+      - DATA_DIR=/data
+    depends_on: [city]
+    restart: unless-stopped
+
+  orchestrator:
+    build: ../orchestrator
+    container_name: orchestrator
+    ports: ["8100:8100"]
+    env_file: ../.env
+    volumes:
+      - ../data:/data
+      # demo-only: docker socket lets Agent J restart allowlisted containers.
+      # Real deployments would use a scoped API, never the raw socket.
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DATA_DIR=/data
+    depends_on: [city]
+    restart: unless-stopped
