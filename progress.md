@@ -12,11 +12,13 @@
 │ startup sweep logic             │ DONE     │ 2026-07-16              │
 │ SigNoz Alert / setup documents  │ DONE     │ 2026-07-16              │
 │ Fix all 40 architectural bugs   │ DONE     │ 2026-07-16              │
+│ Create & push GitHub repository │ DONE     │ 2026-07-16              │
 │ HQ Web UI Frontend React Pages  │ PENDING  │ 2026-07-16              │
 │ Live SigNoz integration & demo  │ PENDING  │ 2026-07-17              │
 └─────────────────────────────────┴──────────┴─────────────────────────┘
 
 ## Completed Milestones
+- **GitHub Repository Setup**: Initialized Git, configured `.gitignore` to ignore `.scratch` and local configurations, created the public repository `Signoz-hackathon` on GitHub via CLI, and pushed the `main` branch code successfully.
 - **All 40 Architecture Bugs Resolved**: Fixed the OTel import race, synchronous event loop blocks, incorrect SigNoz v5 query formats, memory leaks, SQL connection leaks, and security flaws across all backend codebases.
 - **OTel Metrics & Custom Instrumentation**: Implemented `city.chat.requests`, `city.llm.output_tokens`, `city.llm.cost_usd`, and manual VmRSS observable gauge `city.process.memory.rss` in `city/app/otel.py` and `city/app/main.py`.
 - **Zombie Loop Queue Integration**: Configured `queue.json` support in spawner and background worker processing.

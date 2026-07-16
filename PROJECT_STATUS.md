@@ -12,6 +12,10 @@ All core backend components and agent pipeline logic are fully built, tested, an
 │ hq-ui            │ localhost:5173  │ UI Code in Process (User Side)  │
 └──────────────────┴─────────────────┴─────────────────────────────────┘
 
+## GitHub Repository
+- **Remote URL**: `git@github.com:Sahiljangra115/Signoz-hackathon.git`
+- **Main Branch**: Tracked and pushed successfully
+
 ## Active Gaps & Next Steps
 1. User is compiling UI code (no backend gaps remain).
 2. Deploy live SigNoz instance and hook webhook to it.
