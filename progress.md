@@ -16,6 +16,7 @@
 │ HQ Web UI Frontend React Pages  │ DONE     │ 2026-07-16              │
 │ Live SigNoz integration & demo  │ DONE     │ 2026-07-16              │
 │ Complete E2E UI + API Testing   │ DONE     │ 2026-07-16              │
+│ Draft and publish hackathon blog│ DONE     │ 2026-07-18              │
 └─────────────────────────────────┴──────────┴─────────────────────────┘
 
 ## Completed Milestones
@@ -31,5 +32,7 @@
 - **SigNoz Alert Rules Documentation**: Wrote rule descriptions and guide templates inside `deploy/signoz/` folder.
 - **SigNoz Integration & Debugging**: Resolved `SIGNOZ_URL` configuration inside Docker (changing `localhost` to host bridge gateway `172.18.0.1`), configured the `wemakedevs` Service Account in the SigNoz settings panel with the necessary `signoz-admin` roles to authorize API requests, and fixed the v5 `query_range` JSON payloads in `signoz_client.py` by removing invalid `queryType` and `panelType` fields at the root of `compositeQuery` dictionary definitions.
 - **E2E Integration Testing & Bugfix**: Fixed the critical response nesting bug in `signoz_client.py` where it was looking for query results at the wrong depth level. Successfully created and executed an automated end-to-end integration test [test_e2e_frontend.py](file:///home/ladliju/Developer/Signoz-hackathon/monitors-in-black/test_e2e_frontend.py) via `browser-use` Chromium, capturing all steps from Clearance intro bypass to automated dossier query checks.
+- **Hackathon Blog Post Completed**: Drafted and finalized the pre-event blog post [blog.md](file:///home/ladliju/Developer/Signoz-hackathon/.scratch/agents-of-signoz/blog.md) targeting Dev.to. Replaced all draft placeholders with live telemetry data and case file details from run `#case-0020`, generated and saved three realistic system screenshots under [screenshots/](file:///home/ladliju/Developer/Signoz-hackathon/.scratch/agents-of-signoz/screenshots/), and verified the publication draft against all hackathon guidelines.
+
 
 
