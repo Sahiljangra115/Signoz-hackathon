@@ -1,6 +1,6 @@
 {
   "latency_leech": false,
-  "error_swarm": false,
+  "error_swarm": true,
   "token_devourer": false,
   "memory_worm": false,
   "zombie_loop": false,

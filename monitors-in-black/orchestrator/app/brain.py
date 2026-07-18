@@ -1,16 +1,21 @@
 """Agent K's reasoning: classify the alien and recommend an allowlisted action.
 
-With ANTHROPIC_API_KEY: Claude call, JSON-only output with json_schema constraint,
-evidence wrapped as untrusted data. Without: heuristic mapping from the alert rule name.
-Any model failure falls back to the heuristic, never crashes the pipeline.
+With OPENROUTER_API_KEY: LLM call via OpenRouter's OpenAI-compatible endpoint,
+JSON-only output, evidence wrapped as untrusted data. Without: heuristic mapping
+from the alert rule name. Any model failure falls back to the heuristic, never
+crashes the pipeline.
 """
 import json
 import logging
 import os
 
+import httpx
+
 from .actions import ALLOWLIST
 
 log = logging.getLogger("brain")
+
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 RULE_HINTS = {
     "latency": ("latency_leech", "restart_city"),
@@ -75,37 +80,47 @@ def heuristic(alert: dict) -> dict:
 
 
 def classify(alert: dict, evidence: list[dict]) -> dict:
-    if not os.getenv("ANTHROPIC_API_KEY"):
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
         return heuristic(alert)
     try:
-        import anthropic
-
         blocks = "\n".join(
             f"<evidence type={e['type']} ref={e['ref']}>{e['excerpt']}</evidence>" for e in evidence
         )
-        client = anthropic.Anthropic()
-        
-        user_content = f"Alert: {json.dumps(alert)}\n\nEvidence:\n{blocks or '(no evidence available)'}"
-        
-        resp = client.messages.create(
-            model=os.getenv("BRAIN_MODEL", "claude-sonnet-5"),
-            max_tokens=1500,
-            system=SYSTEM,
-            messages=[{"role": "user", "content": user_content}],
-            output_config={"format": {"type": "json_schema", "schema": K_SCHEMA}}
+        user_content = (
+            f"Alert: {json.dumps(alert)}\n\nEvidence:\n{blocks or '(no evidence available)'}"
+            f"\n\nRespond with ONLY a JSON object matching this schema, no prose, no markdown fences:\n"
+            f"{json.dumps(K_SCHEMA)}"
         )
-        
-        # Extract first text-type block
-        text_block = next(b.text for b in resp.content if b.type == "text")
-        verdict = json.loads(text_block)
-        
+
+        resp = httpx.post(
+            OPENROUTER_URL,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": os.getenv("BRAIN_MODEL", "meta-llama/llama-3.3-70b-instruct:free"),
+                "max_tokens": 1500,
+                "response_format": {"type": "json_object"},
+                "messages": [
+                    {"role": "system", "content": SYSTEM},
+                    {"role": "user", "content": user_content},
+                ],
+            },
+            timeout=30.0,
+        )
+        resp.raise_for_status()
+        text = resp.json()["choices"][0]["message"]["content"]
+        verdict = json.loads(text)
+
         # Map recommended_action_id to action_id for pipeline compatibility
         verdict["action_id"] = verdict.get("recommended_action_id")
-        
+
         if verdict.get("action_id") not in ALLOWLIST and verdict.get("action_id") != "none":
             verdict["action_id"] = None
             verdict["confidence"] = min(verdict.get("confidence", 0), 0.5)
-            
+
         return verdict
     except Exception as exc:
         log.warning("model classify failed (%s), heuristic fallback", exc)
