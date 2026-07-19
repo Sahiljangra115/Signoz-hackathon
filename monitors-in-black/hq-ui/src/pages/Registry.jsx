@@ -13,13 +13,18 @@ export default function Registry() {
   }
 
   return (
-    <div className="p-6 h-[calc(100vh-6rem)] overflow-y-auto flex flex-col gap-6 select-none">
-      <header className="border-b border-edge/60 pb-3 flex items-baseline justify-between">
-        <h1 className="font-display text-2xl font-bold uppercase tracking-agency text-ink">
-          Alien Registry
-        </h1>
-        <div className="font-mono text-xs text-ink/50 uppercase">
-          {registry.length} Species on File
+    <div className="p-6 h-full overflow-y-auto flex flex-col gap-6 select-none">
+      <header className="flex items-end justify-between">
+        <div>
+          <div className="font-mono text-[10px] text-alien mb-1">
+            agent@mib-hq:~/registry$ ls species/
+          </div>
+          <h1 className="font-stat text-3xl md:text-4xl font-bold tracking-tight text-ink">
+            Alien registry.
+          </h1>
+        </div>
+        <div className="font-mono text-[10px] uppercase tracking-agency text-ink/60">
+          {registry.length} species on file
         </div>
       </header>
 

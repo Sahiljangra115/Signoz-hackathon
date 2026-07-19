@@ -1,59 +1,50 @@
 import React from 'react'
+import { motion } from 'framer-motion'
+import { staggerContainer } from '../../lib/motion'
+import StatCard from '../ui/StatCard'
+import { GradientDots, GradientBars } from '../charts/MiniCharts'
 
 export default function StatusTiles({ stats, loading }) {
-  const getCityStatusClass = () => {
-    if (loading || !stats) return 'text-ink/40'
-    return stats.city_status === 'BREACH'
-      ? 'text-danger animate-pulse-soft font-bold'
-      : 'text-alien font-bold'
-  }
-
-  const getVal = (val) => {
-    if (loading || !stats) return '--'
-    return val
-  }
+  const num = (v) => (loading || v == null ? '--' : Number(v))
+  const breach = stats?.city_status === 'BREACH'
 
   return (
-    <div className="grid grid-cols-4 gap-4 select-none">
-      {/* City Status */}
-      <div className="border border-edge bg-panel flex flex-col justify-center p-4 rounded-sm">
-        <div className="text-[9px] text-ink/50 uppercase tracking-agency font-mono">
-          City Status
-        </div>
-        <div className={`text-xl font-display uppercase tracking-widest mt-1 ${getCityStatusClass()}`}>
-          {stats ? stats.city_status : (loading ? 'LOADING' : 'OFFLINE')}
-        </div>
-      </div>
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="grid grid-cols-2 xl:grid-cols-4 gap-4 select-none"
+    >
+      <StatCard
+        label="City Status"
+        value={
+          <span className={breach ? 'text-danger animate-pulse-soft' : 'text-beam'}>
+            {stats ? stats.city_status : loading ? 'LINK' : 'OFFLINE'}
+          </span>
+        }
+        sub={breach ? 'Anomaly containment breach' : 'All sectors nominal'}
+      />
 
-      {/* Active Contacts */}
-      <div className="border border-edge bg-panel flex flex-col justify-center p-4 rounded-sm">
-        <div className="text-[9px] text-ink/50 uppercase tracking-agency font-mono">
-          Active Contacts
-        </div>
-        <div className="text-2xl font-display font-bold mt-1 text-ink">
-          {getVal(stats?.active_cases)}
-        </div>
-      </div>
+      <StatCard
+        label="Active Contacts"
+        value={num(stats?.active_cases)}
+        sub="Open + investigating"
+        chart={<GradientDots />}
+      />
 
-      {/* Neutralyzed */}
-      <div className="border border-edge bg-panel flex flex-col justify-center p-4 rounded-sm">
-        <div className="text-[9px] text-ink/50 uppercase tracking-agency font-mono">
-          Captured Anomalies
-        </div>
-        <div className="text-2xl font-display font-bold mt-1 text-alien">
-          {getVal(stats?.neuralyzed_total)}
-        </div>
-      </div>
+      <StatCard
+        label="Captured Anomalies"
+        value={num(stats?.neuralyzed_total)}
+        accent
+        sub="Neuralyzed to date"
+        chart={<GradientBars tall={5} />}
+      />
 
-      {/* Agents on Duty */}
-      <div className="border border-edge bg-panel flex flex-col justify-center p-4 rounded-sm">
-        <div className="text-[9px] text-ink/50 uppercase tracking-agency font-mono">
-          Agents on Duty
-        </div>
-        <div className="text-2xl font-display font-bold mt-1 text-ink">
-          {getVal(stats?.agents_on_duty)}
-        </div>
-      </div>
-    </div>
+      <StatCard
+        label="Agents on Duty"
+        value={num(stats?.agents_on_duty)}
+        sub="Z · K · J · O"
+      />
+    </motion.div>
   )
 }

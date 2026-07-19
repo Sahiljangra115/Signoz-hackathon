@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { getJSON } from '../lib/api'
 
 export function usePoll(path, intervalMs, defaultValue = null) {
@@ -34,5 +34,7 @@ export function usePoll(path, intervalMs, defaultValue = null) {
     }
   }, [path, intervalMs])
 
-  return { data, error, loading, refetch: () => refetch.current() }
+  const stableRefetch = useCallback(() => refetch.current(), [])
+
+  return { data, error, loading, refetch: stableRefetch }
 }

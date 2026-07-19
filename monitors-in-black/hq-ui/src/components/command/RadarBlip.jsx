@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { SPECIES_META, threatColor } from '../../lib/constants'
-import { blipIdleVariants, blipSpawnVariants, pingVariants } from '../../lib/motion'
+import { blipIdleVariants, blipSpawnVariants, pingVariants, SPRING } from '../../lib/motion'
+import ThreatBar from '../ui/ThreatBar'
 
 const COLORS = {
   alien: { dot: 'bg-alien shadow-glow', ring: 'border-alien' },
@@ -35,6 +36,8 @@ export default function RadarBlip({ caseObj, onClick }) {
         variants={blipSpawnVariants}
         initial="initial"
         animate="animate"
+        whileHover={{ scale: 1.25, transition: SPRING }}
+        whileFocus={{ scale: 1.25, transition: SPRING }}
         onClick={onClick}
         aria-label={`Case ${id}, ${meta ? meta.codename : 'species unidentified'}`}
         className="relative group focus:outline-none"
@@ -55,8 +58,19 @@ export default function RadarBlip({ caseObj, onClick }) {
           />
         )}
 
-        <div className="absolute left-5 top-0 bg-panel/90 border border-edge px-1.5 py-0.5 rounded-sm pointer-events-none opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity z-20 whitespace-nowrap font-mono text-[9px] text-ink uppercase tracking-wide">
-          {id} : {meta ? meta.codename : 'IDENTIFYING…'}
+        <div
+          className="absolute left-5 top-1/2 -translate-y-1/2 min-w-[9rem] bg-panel/90 backdrop-blur-md border border-edge shadow-card px-2.5 py-2 rounded-xl pointer-events-none z-20 origin-left opacity-0 scale-90 translate-x-[-4px] transition-[opacity,transform] duration-200 ease-out group-hover:opacity-100 group-hover:scale-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:scale-100 group-focus-visible:translate-x-0"
+        >
+          <div className="flex items-center gap-2">
+            {meta && <meta.Icon className="w-6 h-6 text-ink/75 shrink-0" />}
+            <div className="min-w-0">
+              <div className="font-mono text-[9px] font-bold text-ink uppercase tracking-wide truncate">
+                {meta ? meta.codename : 'IDENTIFYING…'}
+              </div>
+              <div className="font-mono text-[8px] text-ink/40 truncate">{id}</div>
+            </div>
+          </div>
+          {meta && <ThreatBar threat={meta.threat} />}
         </div>
       </motion.button>
     </div>

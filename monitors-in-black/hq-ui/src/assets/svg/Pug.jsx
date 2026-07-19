@@ -1,6 +1,6 @@
 import React from 'react'
 
-// Roster easter egg. F. — consultant. Don't ask.
+// Roster easter egg. F. :: consultant. Don't ask.
 export default function Pug({ className }) {
   return (
     <svg viewBox="0 0 64 64" fill="currentColor" aria-hidden="true" className={className}>

@@ -12,20 +12,23 @@ export default function Shell({ children }) {
   const location = useLocation()
   const shake = useAnimationControls()
 
-  // §4.3a — imperative start, not a key bump: re-keying the wrapper on every
+  // §4.3a: imperative start, not a key bump: re-keying the wrapper on every
   // pulse would remount the page and wipe its state mid-hunt.
   useEffect(() => {
     if (alertPulse) shake.start('shake')
   }, [alertPulse, shake])
 
+  // Riced terminal: the whole HQ lives inside one macOS-style window sitting
+  // on the void desktop. NavRail is the titlebar+tabs, MetricsTicker the
+  // tmux statusline.
   return (
-    <div className="min-h-screen flex flex-col bg-void text-ink overflow-hidden">
+    <div className="h-screen flex flex-col bg-void text-ink overflow-hidden md:p-4">
       <AlertFlash pulse={alertPulse} />
       <motion.div
         variants={shakeVariants}
         initial="still"
         animate={shake}
-        className="flex-1 flex flex-col"
+        className="flex-1 flex flex-col min-h-0 overflow-hidden bg-panel/70 md:rounded-2xl md:border md:border-edge md:shadow-card"
       >
         <NavRail />
         <AnimatePresence mode="wait">
@@ -35,7 +38,7 @@ export default function Shell({ children }) {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="flex-1 overflow-hidden"
+            className="flex-1 min-h-0 overflow-hidden"
           >
             {children}
           </motion.main>

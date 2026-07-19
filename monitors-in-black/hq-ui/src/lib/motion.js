@@ -4,6 +4,37 @@
 export const EASE_OUT = [0.16, 1, 0.3, 1]
 export const EASE_IN = [0.7, 0, 0.84, 0]
 
+// Smooth, slightly bouncy spring used for cards, tiles and hovers.
+export const SPRING = { type: 'spring', stiffness: 260, damping: 30, mass: 0.9 }
+export const SPRING_SOFT = { type: 'spring', stiffness: 180, damping: 26, mass: 1 }
+// Tight, fast spring for press/tap feedback (buttons, chips).
+export const SPRING_SNAPPY = { type: 'spring', stiffness: 420, damping: 24, mass: 0.6 }
+
+// Shared spring-based scroll reveal (replaces per-file duration/ease literals
+// on landing sections). Spread as {...revealSpring}.
+export const revealSpring = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0, transition: SPRING_SOFT },
+  viewport: { once: true, margin: '-80px' },
+}
+
+// Staggered reveal — parent gates children, children rise + fade in.
+export const staggerContainer = {
+  initial: {},
+  animate: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+}
+
+export const riseItem = {
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0, transition: SPRING },
+}
+
+// Card hover lift on a spring (replaces the old duration tween).
+export const cardLiftVariants = {
+  initial: { y: 0 },
+  hover: { y: -6, transition: SPRING },
+}
+
 export const DUR = {
   page: 0.3,
   pageExit: 0.15,

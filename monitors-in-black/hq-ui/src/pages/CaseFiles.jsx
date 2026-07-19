@@ -49,10 +49,10 @@ export default function CaseFiles() {
   const selectedCase = cases.find((c) => c.id === selectedId) || null
 
   return (
-    <div className="flex gap-4 p-4 h-[calc(100vh-6rem)] overflow-hidden">
+    <div className="flex gap-4 p-4 h-full overflow-hidden">
       <div className="w-[340px] shrink-0 h-full overflow-hidden flex flex-col gap-3">
-        <div className="font-display text-xs uppercase tracking-agency text-ink/40 select-none font-bold">
-          Archive Index
+        <div className="font-mono text-[10px] text-alien select-none">
+          agent@mib-hq:~/cases$ ls -t archive/
         </div>
         <div className="flex-1 overflow-hidden">
           <CaseList

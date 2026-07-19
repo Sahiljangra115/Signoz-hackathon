@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --beam: linear-gradient(135deg, #39ff14 0%, #0affc2 55%, #22d3ee 100%);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 body {
   @apply bg-void text-ink font-mono;
 }
@@ -11,7 +16,20 @@ body {
   outline-offset: 2px;
 }
 
-/* Global noir overlays (pointer-events-none, mounted once in App) */
+/* Gradient helpers (the "neuralyzer beam" signature) */
+.text-beam {
+  background: var(--beam);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.bg-beam {
+  background: var(--beam);
+}
+
+/* Softened noir overlays: cleaner, closer to the minimal reference.
+   Mounted once in App (pointer-events-none). */
 .fx-scanlines {
   position: fixed;
   inset: 0;
@@ -19,19 +37,19 @@ body {
   z-index: 40;
   background: repeating-linear-gradient(
     0deg,
-    rgba(0, 0, 0, 0.22) 0px,
-    rgba(0, 0, 0, 0.22) 1px,
+    rgba(0, 0, 0, 0.18) 0px,
+    rgba(0, 0, 0, 0.18) 1px,
     transparent 1px,
-    transparent 3px
+    transparent 4px
   );
-  opacity: 0.5;
+  opacity: 0.22;
 }
 .fx-noise {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 41;
-  opacity: 0.04;
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
 }
@@ -40,16 +58,74 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 42;
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  background: radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* Wireframe crate: draw-on + slow float (landing signature).
+   Base state is fully drawn/visible so nothing disappears without motion. */
+.crate-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.crate-labels {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .crate-line {
+    animation: crate-draw 2.4s var(--ease-out) both;
+  }
+  .crate-labels {
+    animation: crate-fade 1.4s ease 1.5s both;
+  }
+  .crate-float {
+    animation: crate-float 8s ease-in-out infinite;
+    transform-origin: center;
+  }
+  @keyframes crate-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes crate-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes crate-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+}
+
+/* Species marquee: track holds two copies of the list, scrolls half its width. */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
   .fx-scanlines {
     display: none;
   }
   .animate-radar-spin,
   .animate-blink-hard,
-  .animate-pulse-soft {
+  .animate-pulse-soft,
+  .animate-shimmer,
+  .animate-bounce {
     animation: none !important;
   }
 }
