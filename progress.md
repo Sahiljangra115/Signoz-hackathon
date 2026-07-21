@@ -17,7 +17,39 @@
 │ Live SigNoz integration & demo  │ DONE     │ 2026-07-16              │
 │ Complete E2E UI + API Testing   │ DONE     │ 2026-07-16              │
 │ Draft and publish hackathon blog│ DONE     │ 2026-07-18              │
+│ All 6 SigNoz alert rules live   │ DONE     │ 2026-07-21              │
+│ SigNoz dashboard + JSON exports │ DONE     │ 2026-07-21              │
+│ Fix counter temporality bug     │ DONE     │ 2026-07-21              │
+│ Fix J verification window bug   │ DONE     │ 2026-07-21              │
+│ Submission-grade root README    │ DONE     │ 2026-07-21              │
+│ Demo video (<= 3 min)           │ TODO     │ blocking submission     │
+│ Project submission form         │ TODO     │ blocking submission     │
 └─────────────────────────────────┴──────────┴─────────────────────────┘
+
+## 2026-07-21 submission-prep pass
+
+- **All six alert rules now exist in SigNoz.** Only `ErrorSwarm` had been created by
+  hand. The remaining five (LatencyLeech, TokenDevourer, MemoryWorm, ZombieLoop,
+  TheGhost) were created through `POST /api/v1/rules` and exported to
+  `deploy/signoz/alert-rules.json`.
+- **Dashboard built and exported.** Seven panels across traces, metrics, and logs,
+  one per species, exported to `deploy/signoz/dashboard-city-surveillance.json`. Every
+  panel query was replayed through `/api/v5/query_range` and returns data.
+- **Counter temporality bug fixed.** SigNoz matches metric temporality exactly.
+  `signoz_client.metric_series` always sent `unspecified`, which returns
+  `aggregations: null` for counters, so `city.chat.requests`, `city.llm.output_tokens`
+  and `city.llm.cost_usd` all read as zero. That is why the UI ticker showed `--`. It
+  now tries `cumulative` first and falls back. Snapshot returns real values.
+- **Verification window bug fixed.** Agent J queried a trailing 2-minute window inside
+  a 120s budget, so a correct fix could never produce a clean reading and every case
+  escalated. Now a 1-minute window inside a 180s budget.
+- **Two live end-to-end runs on real alerts.** case-0021 escalated (verification
+  failed), case-0022 closed as `neuralyzed` with `verified: true` after `restart_city`.
+- **Root README rewritten** as the submission front door, with mermaid architecture,
+  species and agent tables, safety model, observability depth, quickstart, and six
+  screenshots under `docs/images/`.
+- **Stamp overlap fixed** in the case detail header (the NEURALYZED stamp was landing
+  on the species and confidence readout).
 
 ## Completed Milestones
 - **GitHub Repository Setup**: Initialized Git, configured `.gitignore` to ignore `.scratch` and local configurations, created the public repository `Signoz-hackathon` on GitHub via CLI, and pushed the `main` branch code successfully.

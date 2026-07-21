@@ -23,7 +23,9 @@ export default function Stamp({ caseId, status }) {
   const animate = decision.current.id === caseId && decision.current.slam
 
   return (
-    <div className="absolute top-16 right-12 z-20 pointer-events-none select-none">
+    // top-32 keeps the slam clear of the species/confidence readout in the
+    // header row, which it used to land on top of.
+    <div className="absolute top-32 right-12 z-20 pointer-events-none select-none">
       {animate ? (
         <motion.div
           variants={stampVariants}

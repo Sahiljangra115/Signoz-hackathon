@@ -210,10 +210,24 @@ def metric_latest(metric: str, agg: str = "sum") -> float | None:
 
 
 def metric_series(metric: str, agg: str = "sum", minutes: int = 15) -> list[dict]:
+    """Series for one metric.
+
+    SigNoz stores temporality per instrument and matches on it exactly: counters
+    are 'cumulative', observable gauges are 'unspecified'. Asking with the wrong
+    one returns aggregations=null, not an error. Try cumulative, fall back.
+    """
+    for temporality in ("cumulative", "unspecified"):
+        series = _metric_series(metric, agg, minutes, temporality)
+        if series:
+            return series
+    return []
+
+
+def _metric_series(metric: str, agg: str, minutes: int, temporality: str) -> list[dict]:
     metric = sanitize_field(metric)
     end_ms = int(time.time() * 1000)
     start_ms = end_ms - (minutes * 60 * 1000)
-    
+
     # Map raw aggregation name to correct v5 aggregator
     v5_agg = "latest" if agg == "latest" else "sum" if agg == "sum" else "avg" if agg == "avg" else "rate"
 
@@ -232,7 +246,7 @@ def metric_series(metric: str, agg: str = "sum", minutes: int = 15) -> list[dict
                         "aggregations": [
                             {
                                 "metricName": metric,
-                                "temporality": "unspecified",
+                                "temporality": temporality,
                                 "timeAggregation": v5_agg,
                                 "spaceAggregation": "sum"
                             }

@@ -105,7 +105,11 @@ def verify(action_id: str, case: dict = None) -> bool:
         log.info("No SIGNOZ_API_KEY, fallback verify passed for %s", action_id)
         return True
 
-    # 3. SigNoz verification loop (2 minutes)
+    # 3. SigNoz verification loop (3 minutes)
+    #
+    # Query a 1-minute window, not 2: a trailing window still contains the slow
+    # or failing spans from before the fix, so a 2-minute window can never go
+    # clean inside the loop budget and every case escalates on a good action.
     log.info("Starting SigNoz verification loop for %s", action_id)
     consecutive_success = 0
     start_time = time.time()
@@ -121,15 +125,15 @@ def verify(action_id: str, case: dict = None) -> bool:
         elif action_id in ("purge_queue", "disable_flag:zombie_loop"):
             species = "zombie_loop"
         
-    while time.time() - start_time < 120:
+    while time.time() - start_time < 180:
         success = False
         try:
             if species == "latency_leech":
-                p99 = signoz_client.query_p99_latency("city", window_min=2)
+                p99 = signoz_client.query_p99_latency("city", window_min=1)
                 if p99 is not None and p99 < 2000.0:
                     success = True
             elif species == "error_swarm":
-                rate = signoz_client.query_error_rate("city", window_min=2)
+                rate = signoz_client.query_error_rate("city", window_min=1)
                 if rate is not None and rate < 20.0:
                     success = True
             elif species == "token_devourer":
@@ -167,5 +171,5 @@ def verify(action_id: str, case: dict = None) -> bool:
             
         time.sleep(20)
         
-    log.warning("Verification timed out after 120s for %s", action_id)
+    log.warning("Verification timed out after 180s for %s", action_id)
     return False

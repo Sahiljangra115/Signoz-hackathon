@@ -1,0 +1,437 @@
+{
+  "description": "Every signal the agent pipeline reasons over: traces, custom LLM metrics, and logs. Each panel maps 1:1 to an alien species alert rule.",
+  "layout": [
+    {
+      "h": 6,
+      "i": "mib-widget-1",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "h": 6,
+      "i": "mib-widget-2",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 6,
+      "y": 0
+    },
+    {
+      "h": 6,
+      "i": "mib-widget-3",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 0,
+      "y": 6
+    },
+    {
+      "h": 6,
+      "i": "mib-widget-4",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 6,
+      "y": 6
+    },
+    {
+      "h": 6,
+      "i": "mib-widget-5",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 0,
+      "y": 12
+    },
+    {
+      "h": 6,
+      "i": "mib-widget-6",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 6,
+      "y": 12
+    },
+    {
+      "h": 6,
+      "i": "mib-widget-7",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 0,
+      "y": 18
+    }
+  ],
+  "tags": [
+    "monitors-in-black",
+    "hackathon",
+    "llm-observability"
+  ],
+  "title": "Monitors in Black: City Surveillance",
+  "variables": {},
+  "version": "v5",
+  "widgets": [
+    {
+      "description": "p99 duration of POST /chat spans. Alert LatencyLeech fires above 2s.",
+      "fillSpans": false,
+      "id": "mib-widget-1",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "panelType": "graph",
+        "queries": [
+          {
+            "spec": {
+              "aggregations": [
+                {
+                  "expression": "p99(duration_nano)"
+                }
+              ],
+              "disabled": false,
+              "filter": {
+                "expression": "service.name = 'city' AND name = 'POST /chat'"
+              },
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "p99",
+              "name": "A",
+              "order": [],
+              "signal": "traces",
+              "source": "",
+              "stepInterval": 60
+            },
+            "type": "builder_query"
+          }
+        ],
+        "queryType": "builder",
+        "unit": "ns"
+      },
+      "softMax": null,
+      "softMin": null,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Chat p99 latency (Latency Leech)",
+      "yAxisUnit": "ns"
+    },
+    {
+      "description": "Share of city spans carrying an error. Alert ErrorSwarm fires above 20%.",
+      "fillSpans": false,
+      "id": "mib-widget-2",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "panelType": "graph",
+        "queries": [
+          {
+            "spec": {
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "disabled": false,
+              "filter": {
+                "expression": "hasError = true"
+              },
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "errors",
+              "name": "A",
+              "order": [],
+              "signal": "traces",
+              "source": "",
+              "stepInterval": 60
+            },
+            "type": "builder_query"
+          },
+          {
+            "spec": {
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "disabled": false,
+              "filter": {
+                "expression": "service.name = 'city'"
+              },
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "all",
+              "name": "B",
+              "order": [],
+              "signal": "traces",
+              "source": "",
+              "stepInterval": 60
+            },
+            "type": "builder_query"
+          },
+          {
+            "spec": {
+              "expression": "(A / B) * 100",
+              "legend": "error %",
+              "name": "F1"
+            },
+            "type": "builder_formula"
+          }
+        ],
+        "queryType": "builder",
+        "unit": "percent"
+      },
+      "softMax": null,
+      "softMin": null,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Error rate % (Error Swarm)",
+      "yAxisUnit": "percent"
+    },
+    {
+      "description": "Rate of city.llm.output_tokens. Alert TokenDevourer fires above 50/s.",
+      "fillSpans": false,
+      "id": "mib-widget-3",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "panelType": "graph",
+        "queries": [
+          {
+            "spec": {
+              "aggregations": [
+                {
+                  "metricName": "city.llm.output_tokens",
+                  "spaceAggregation": "sum",
+                  "temporality": "cumulative",
+                  "timeAggregation": "rate"
+                }
+              ],
+              "disabled": false,
+              "filter": {
+                "expression": ""
+              },
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "tokens/s",
+              "name": "A",
+              "order": [],
+              "signal": "metrics",
+              "source": "",
+              "stepInterval": 60
+            },
+            "type": "builder_query"
+          }
+        ],
+        "queryType": "builder",
+        "unit": ""
+      },
+      "softMax": null,
+      "softMin": null,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "LLM output tokens/s (Token Devourer)",
+      "yAxisUnit": ""
+    },
+    {
+      "description": "Cumulative city.llm.cost_usd, the money side of the AI workload.",
+      "fillSpans": false,
+      "id": "mib-widget-4",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "panelType": "graph",
+        "queries": [
+          {
+            "spec": {
+              "aggregations": [
+                {
+                  "metricName": "city.llm.cost_usd",
+                  "spaceAggregation": "sum",
+                  "temporality": "cumulative",
+                  "timeAggregation": "sum"
+                }
+              ],
+              "disabled": false,
+              "filter": {
+                "expression": ""
+              },
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "usd",
+              "name": "A",
+              "order": [],
+              "signal": "metrics",
+              "source": "",
+              "stepInterval": 60
+            },
+            "type": "builder_query"
+          }
+        ],
+        "queryType": "builder",
+        "unit": ""
+      },
+      "softMax": null,
+      "softMin": null,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "LLM spend (USD)",
+      "yAxisUnit": ""
+    },
+    {
+      "description": "city.process.memory.rss. Alert MemoryWorm fires above 400MB.",
+      "fillSpans": false,
+      "id": "mib-widget-5",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "panelType": "graph",
+        "queries": [
+          {
+            "spec": {
+              "aggregations": [
+                {
+                  "metricName": "city.process.memory.rss",
+                  "spaceAggregation": "max",
+                  "temporality": "unspecified",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "disabled": false,
+              "filter": {
+                "expression": ""
+              },
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "rss",
+              "name": "A",
+              "order": [],
+              "signal": "metrics",
+              "source": "",
+              "stepInterval": 60
+            },
+            "type": "builder_query"
+          }
+        ],
+        "queryType": "builder",
+        "unit": "bytes"
+      },
+      "softMax": null,
+      "softMin": null,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "City RSS memory (Memory Worm)",
+      "yAxisUnit": "bytes"
+    },
+    {
+      "description": "Rate of city.chat.requests. Alert TheGhost fires when it drops below 0.2/s.",
+      "fillSpans": false,
+      "id": "mib-widget-6",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "panelType": "graph",
+        "queries": [
+          {
+            "spec": {
+              "aggregations": [
+                {
+                  "metricName": "city.chat.requests",
+                  "spaceAggregation": "sum",
+                  "temporality": "cumulative",
+                  "timeAggregation": "rate"
+                }
+              ],
+              "disabled": false,
+              "filter": {
+                "expression": ""
+              },
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "req/s",
+              "name": "A",
+              "order": [],
+              "signal": "metrics",
+              "source": "",
+              "stepInterval": 60
+            },
+            "type": "builder_query"
+          }
+        ],
+        "queryType": "builder",
+        "unit": ""
+      },
+      "softMax": null,
+      "softMin": null,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Chat request rate (The Ghost)",
+      "yAxisUnit": ""
+    },
+    {
+      "description": "Count of city logs matching worker retry. Alert ZombieLoop fires above 20.",
+      "fillSpans": false,
+      "id": "mib-widget-7",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "panelType": "graph",
+        "queries": [
+          {
+            "spec": {
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "disabled": false,
+              "filter": {
+                "expression": "service.name = 'city' AND body LIKE '%worker retry%'"
+              },
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "retries",
+              "name": "A",
+              "order": [],
+              "signal": "logs",
+              "source": "",
+              "stepInterval": 60
+            },
+            "type": "builder_query"
+          }
+        ],
+        "queryType": "builder",
+        "unit": ""
+      },
+      "softMax": null,
+      "softMin": null,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Worker retry log volume (Zombie Loop)",
+      "yAxisUnit": ""
+    }
+  ]
+}

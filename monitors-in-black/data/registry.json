@@ -4,8 +4,8 @@
     "codename": "Latency Leech",
     "threat_level": 3,
     "signature": "p99 latency spike on /chat spans",
-    "captures": 0,
-    "last_seen": null
+    "captures": 1,
+    "last_seen": "2026-07-21T17:01:16Z"
   },
   {
     "species": "error_swarm",
