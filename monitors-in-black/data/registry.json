@@ -12,16 +12,16 @@
     "codename": "Error Swarm",
     "threat_level": 4,
     "signature": "5xx error-rate burst",
-    "captures": 14,
-    "last_seen": "2026-07-17T07:13:34Z"
+    "captures": 15,
+    "last_seen": "2026-07-22T03:21:44Z"
   },
   {
     "species": "token_devourer",
     "codename": "Token Devourer",
     "threat_level": 4,
     "signature": "gen_ai token usage spike",
-    "captures": 0,
-    "last_seen": null
+    "captures": 3,
+    "last_seen": "2026-07-22T03:42:46Z"
   },
   {
     "species": "memory_worm",
@@ -44,7 +44,7 @@
     "codename": "The Ghost",
     "threat_level": 3,
     "signature": "traffic drops to near zero",
-    "captures": 0,
-    "last_seen": null
+    "captures": 1,
+    "last_seen": "2026-07-22T03:43:35Z"
   }
 ]

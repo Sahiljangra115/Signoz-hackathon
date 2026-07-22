@@ -69,8 +69,31 @@ async def run_case(case: dict) -> None:
         _timeline(case, bus.chatter("K", voice.K_START, case_id))
         evidence = await asyncio.to_thread(signoz_client.gather_evidence, case["alert"])
         case["evidence"] = evidence
-        
-        verdict = await asyncio.to_thread(brain.classify, case["alert"], evidence)
+
+        # Deterministic evidence-quality gate: the LLM cannot tell "I have no
+        # data" from "the data is clean", so decide that here. Query failures
+        # produce type="note" items; a run with failures and zero traces/logs
+        # is broken telemetry (bad service name, SigNoz down), not an alien.
+        # An empty-but-successful query set (possible real ghost) still goes
+        # to the model. Metrics don't count as real evidence: they're global,
+        # not scoped to the alerting service.
+        real = [e for e in evidence if e["type"] in ("trace", "log")]
+        failed = [e for e in evidence if e["type"] == "note"]
+        if failed and not real:
+            verdict = {
+                "species": "unknown",
+                "confidence": 0.2,
+                "root_cause": (
+                    f"Insufficient telemetry: {len(failed)} evidence queries failed and no traces "
+                    f"or logs were retrieved for service '{case['alert'].get('service', '?')}'. "
+                    "This points to a tooling or config fault (nonexistent service, SigNoz outage), "
+                    "not a confirmed incident. No classification attempted."
+                ),
+                "action_id": None,
+            }
+            _timeline(case, bus.chatter("K", voice.K_BAD_TELEMETRY.format(failed=len(failed)), case_id))
+        else:
+            verdict = await asyncio.to_thread(brain.classify, case["alert"], evidence)
         
         # Safe validate LLM outputs
         species = verdict.get("species")
@@ -134,7 +157,7 @@ async def run_case(case: dict) -> None:
             confidence=case["confidence"] or 0,
             opened_at=case["opened_at"],
             rule=case["alert"].get("rule", "unknown"),
-            root_cause=verdict.get("root_cause", ""),
+            root_cause=voice.hedge_root_cause(verdict.get("root_cause", ""), case["confidence"]),
             evidence_lines=evidence_lines,
             action_line=action_line,
         )
