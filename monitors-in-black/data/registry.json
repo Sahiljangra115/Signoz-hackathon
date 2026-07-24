@@ -4,8 +4,8 @@
     "codename": "Latency Leech",
     "threat_level": 3,
     "signature": "p99 latency spike on /chat spans",
-    "captures": 1,
-    "last_seen": "2026-07-21T17:01:16Z"
+    "captures": 4,
+    "last_seen": "2026-07-24T08:40:28Z"
   },
   {
     "species": "error_swarm",
@@ -20,8 +20,8 @@
     "codename": "Token Devourer",
     "threat_level": 4,
     "signature": "gen_ai token usage spike",
-    "captures": 3,
-    "last_seen": "2026-07-22T03:42:46Z"
+    "captures": 5,
+    "last_seen": "2026-07-24T07:06:26Z"
   },
   {
     "species": "memory_worm",
